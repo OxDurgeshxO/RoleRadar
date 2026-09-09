@@ -1,0 +1,25 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Increase function timeout (max 26s on Pro plan, 10s on free)
+[functions]
+  node_bundler = "esbuild"
+  
+# Handle API routes
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/___netlify-handler"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
