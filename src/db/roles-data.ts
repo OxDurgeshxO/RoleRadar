@@ -5,10 +5,10 @@ import type { RoleInput } from "@/lib/types";
 
 export const ROLE_SEEDS: RoleInput[] = [
   {
-    name: "Data Analyst",
-    description: "Turn raw data into insights, reports, and dashboards that guide business decisions.",
-    required: ["python", "sql", "excel", "pandas", "power bi", "statistics", "data visualization"],
-    accent: "#63e6be",
+    name: "AI / LLM Application Engineer",
+    description: "Architect generative AI solutions, RAG pipelines, and agentic workflows using modern LLM APIs and vector stores.",
+    required: ["python", "transformers", "langchain", "rag", "vector db", "prompt engineering", "fastapi"],
+    accent: "#a78bfa",
   },
   {
     name: "Machine Learning Engineer",
@@ -23,10 +23,16 @@ export const ROLE_SEEDS: RoleInput[] = [
     accent: "#8b7cff",
   },
   {
-    name: "Data Engineer",
-    description: "Design pipelines and infrastructure that move, transform, and store data at scale.",
-    required: ["python", "sql", "etl", "spark", "airflow", "docker", "cloud deployment"],
-    accent: "#ffb454",
+    name: "Cloud Solutions Architect",
+    description: "Architect resilient, secure, and scalable multi-cloud infrastructure and microservice topologies.",
+    required: ["aws", "terraform", "kubernetes", "docker", "microservices", "system design", "ci/cd"],
+    accent: "#38bdf8",
+  },
+  {
+    name: "Full Stack Developer",
+    description: "Ship end-to-end features across the interface, API, and database layers of a product.",
+    required: ["javascript", "react", "node.js", "rest api", "sql", "git", "docker"],
+    accent: "#b2f7ef",
   },
   {
     name: "Frontend Developer",
@@ -41,16 +47,40 @@ export const ROLE_SEEDS: RoleInput[] = [
     accent: "#ff8fab",
   },
   {
-    name: "Full Stack Developer",
-    description: "Ship end-to-end features across the interface, API, and database layers of a product.",
-    required: ["javascript", "react", "node.js", "rest api", "sql", "git", "docker"],
-    accent: "#b2f7ef",
-  },
-  {
     name: "DevOps Engineer",
     description: "Automate builds, deployments, and infrastructure so teams ship reliably and often.",
     required: ["linux", "git", "docker", "kubernetes", "ci/cd", "aws", "cloud deployment"],
     accent: "#ffd166",
+  },
+  {
+    name: "Data Engineer",
+    description: "Design pipelines and infrastructure that move, transform, and store data at scale.",
+    required: ["python", "sql", "etl", "spark", "airflow", "docker", "cloud deployment"],
+    accent: "#ffb454",
+  },
+  {
+    name: "Cybersecurity Analyst",
+    description: "Guard infrastructure and applications against threat actors with proactive audits, SIEM, and vulnerability triage.",
+    required: ["cybersecurity", "linux", "penetration testing", "siem", "owasp", "git"],
+    accent: "#f43f5e",
+  },
+  {
+    name: "Mobile App Developer",
+    description: "Craft fluid, cross-platform mobile experiences for iOS and Android with modern frameworks.",
+    required: ["javascript", "typescript", "react native", "rest api", "git"],
+    accent: "#34d399",
+  },
+  {
+    name: "Technical Product Manager",
+    description: "Translate business vision into clear technical roadmaps, PRDs, and high-impact engineering sprints.",
+    required: ["product management", "agile", "sql", "data analysis", "rest api", "system design"],
+    accent: "#fb923c",
+  },
+  {
+    name: "Data Analyst",
+    description: "Turn raw data into insights, reports, and dashboards that guide business decisions.",
+    required: ["python", "sql", "excel", "pandas", "power bi", "statistics", "data visualization"],
+    accent: "#63e6be",
   },
   {
     name: "Business Analyst",

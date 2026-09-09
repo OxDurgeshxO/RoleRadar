@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, Database } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { loadRoles } from "@/db/seed";
-import { skillLabel } from "@/lib/skills";
-import { Kicker, Reveal, SkillChip } from "@/components/ui";
+import { Kicker } from "@/components/ui";
+import { RolesExplorer } from "@/components/roles-explorer";
 
 export const dynamic = "force-dynamic";
 
@@ -36,28 +36,7 @@ export default async function RolesPage() {
         </Link>
       </div>
 
-      <div className="mt-12 grid gap-4 md:grid-cols-2">
-        {roles.map((r, i) => (
-          <Reveal key={r.name} delay={Math.min(i * 0.05, 0.3)}>
-            <div className="panel panel-hover h-full p-6">
-              <div className="flex items-center justify-between">
-                <span className="size-2 rounded-full" style={{ background: r.accent }} />
-                <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.2em] text-neutral-400 uppercase">
-                  <Database className="size-3" strokeWidth={2} />
-                  {r.required.length} required
-                </span>
-              </div>
-              <h2 className="text-display mt-4 text-xl font-semibold text-ink">{r.name}</h2>
-              <p className="mt-2 text-[13px] leading-relaxed text-neutral-500">{r.description}</p>
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {r.required.map((id) => (
-                  <SkillChip key={id} label={skillLabel(id)} tone="neutral" />
-                ))}
-              </div>
-            </div>
-          </Reveal>
-        ))}
-      </div>
+      <RolesExplorer roles={roles} />
     </div>
   );
 }

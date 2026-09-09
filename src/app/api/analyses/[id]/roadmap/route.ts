@@ -6,16 +6,12 @@ import { loadRoles } from "@/db/seed";
 import { matchRole } from "@/lib/match";
 import { buildRoadmap } from "@/lib/roadmap";
 import { skillLabel } from "@/lib/skills";
+import { fallbackStore } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
 type Ctx = { params: Promise<{ id: string }> };
 
-/**
- * Re-target the learning roadmap at a different role without re-running the
- * whole analysis — the stored extracted skills are re-scored against the
- * requested role and a fresh week-by-week plan is generated.
- */
 export async function POST(req: Request, ctx: Ctx) {
   const { id } = await ctx.params;
   let body: { role_name?: unknown } = {};
@@ -27,15 +23,29 @@ export async function POST(req: Request, ctx: Ctx) {
   const roleName = typeof body.role_name === "string" ? body.role_name : null;
   if (!roleName) return NextResponse.json({ error: "role_name is required." }, { status: 400 });
 
+  let extractedSkills: string[] | null = null;
   try {
     const [row] = await db.select().from(analyses).where(eq(analyses.id, id)).limit(1);
-    if (!row) return NextResponse.json({ error: "Analysis not found." }, { status: 404 });
+    if (row) extractedSkills = row.extractedSkills;
+  } catch {
+    // Database connection failed
+  }
 
+  if (!extractedSkills) {
+    const fb = fallbackStore.get(id);
+    if (fb) extractedSkills = fb.extractedSkills;
+  }
+
+  if (!extractedSkills) {
+    return NextResponse.json({ error: "Analysis not found." }, { status: 404 });
+  }
+
+  try {
     const catalog = await loadRoles();
     const role = catalog.find((r) => r.name.toLowerCase() === roleName.toLowerCase());
     if (!role) return NextResponse.json({ error: "Unknown role." }, { status: 400 });
 
-    const match = matchRole(role.name, role.required, row.extractedSkills);
+    const match = matchRole(role.name, role.required, extractedSkills);
     return NextResponse.json({
       role_name: role.name,
       match_score: match.matchScore,

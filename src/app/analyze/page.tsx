@@ -8,8 +8,8 @@ export const metadata = {
 export default async function AnalyzePage({
   searchParams,
 }: {
-  searchParams: Promise<{ sample?: string }>;
+  searchParams: Promise<{ sample?: string; role?: string }>;
 }) {
-  const { sample } = await searchParams;
-  return <Analyzer initialSampleId={sample ?? null} />;
+  const { sample, role } = await searchParams;
+  return <Analyzer initialSampleId={sample ?? null} initialRole={role ?? null} />;
 }

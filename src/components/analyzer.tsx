@@ -32,12 +32,39 @@ interface RoleOption {
 const MIN_CHARS = 40;
 const MAX_UPLOAD = 5 * 1024 * 1024;
 
-export function Analyzer({ initialSampleId }: { initialSampleId?: string | null }) {
+const SAMPLE_JDS = [
+  {
+    id: "ai-engineer",
+    title: "AI / LLM Engineer",
+    text: "Seeking an AI Engineer to build generative AI applications and agentic workflows. Requirements: Python, Transformers, LLMs, LangChain, Vector Databases, RAG pipelines, Prompt Engineering, and FastAPI microservices.",
+  },
+  {
+    id: "cloud-architect",
+    title: "Cloud Architect",
+    text: "Seeking a Cloud Solutions Architect to scale cloud infrastructure. Requirements: AWS, Terraform, Kubernetes, Docker, Microservices, CI/CD pipelines, and high availability System Design.",
+  },
+  {
+    id: "fullstack-lead",
+    title: "Full Stack Lead",
+    text: "Seeking a Full Stack Engineer. Requirements: React, TypeScript, Next.js, Node.js, REST APIs, PostgreSQL, Docker, Git, and Agile sprint collaboration.",
+  },
+];
+
+export function Analyzer({
+  initialSampleId,
+  initialRole,
+}: {
+  initialSampleId?: string | null;
+  initialRole?: string | null;
+}) {
   const router = useRouter();
   const initial = SAMPLE_RESUMES.find((s) => s.id === initialSampleId);
   const [text, setText] = useState(initial?.text ?? "");
   const [activeSample, setActiveSample] = useState<string | null>(initial?.id ?? null);
-  const [targetRole, setTargetRole] = useState<string>("");
+  const [targetRole, setTargetRole] = useState<string>(initialRole ?? "");
+  const [targetMode, setTargetMode] = useState<"catalog" | "custom_jd">("catalog");
+  const [customJd, setCustomJd] = useState<string>("");
+  const [activeJdSample, setActiveJdSample] = useState<string | null>(null);
   const [roles, setRoles] = useState<RoleOption[]>([]);
   const [showCleaned, setShowCleaned] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -86,6 +113,10 @@ export function Analyzer({ initialSampleId }: { initialSampleId?: string | null 
   }, [loading]);
 
   const cleanedPreview = useMemo(() => cleanResumeText(text).slice(0, 420), [text]);
+  const customJdSkills = useMemo(() => {
+    if (customJd.trim().length < 20) return [];
+    return extractSkillsFromCleaned(cleanResumeText(customJd));
+  }, [customJd]);
   const charCount = text.length;
   const ready = charCount >= MIN_CHARS && !loading && !parsing;
 
@@ -128,10 +159,17 @@ export function Analyzer({ initialSampleId }: { initialSampleId?: string | null 
     setLoading(true);
     setError(null);
     try {
+      const payload: Record<string, unknown> = { resume_text: text };
+      if (targetMode === "custom_jd" && customJd.trim()) {
+        payload.job_description = customJd.trim();
+      } else if (targetRole) {
+        payload.target_role = targetRole;
+      }
+
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resume_text: text, target_role: targetRole || null }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "Analysis failed.");
@@ -319,27 +357,103 @@ export function Analyzer({ initialSampleId }: { initialSampleId?: string | null 
             )}
           </AnimatePresence>
 
-          {/* target role */}
+          {/* target role / custom job description */}
           <div className="mt-5">
-            <label className="kicker text-[10px] text-neutral-400">roadmap target — optional</label>
-            <div className="relative mt-2">
-              <select
-                value={targetRole}
-                onChange={(e) => setTargetRole(e.target.value)}
-                className="w-full appearance-none rounded-xl border border-line bg-surface px-4 py-3 text-[13.5px] text-ink focus:border-brand/40 focus:ring-2 focus:ring-brand/10 focus:outline-none"
-              >
-                <option value="">Let the engine decide (top-scoring role)</option>
-                {roles.map((r) => (
-                  <option key={r.name} value={r.name}>
-                    {r.name} — {r.required_count} required skills
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-neutral-400" strokeWidth={2.2} />
+            <div className="flex items-center justify-between">
+              <label className="kicker text-[10px] text-neutral-400">target matching mode</label>
+              <div className="flex items-center gap-1 rounded-full border border-line bg-paper p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setTargetMode("catalog")}
+                  className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                    targetMode === "catalog"
+                      ? "bg-ink text-white"
+                      : "text-ink-soft hover:text-ink"
+                  }`}
+                >
+                  Curated Catalog ({roles.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTargetMode("custom_jd")}
+                  className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                    targetMode === "custom_jd"
+                      ? "bg-ink text-white"
+                      : "text-ink-soft hover:text-ink"
+                  }`}
+                >
+                  Custom Job Description
+                </button>
+              </div>
             </div>
-            <p className="mt-2 text-[12px] leading-relaxed text-neutral-500">
-              The learning roadmap is built from the gaps of this role. Leave it blank to use your best match.
-            </p>
+
+            {targetMode === "catalog" ? (
+              <div className="mt-2.5">
+                <div className="relative">
+                  <select
+                    value={targetRole}
+                    onChange={(e) => setTargetRole(e.target.value)}
+                    className="w-full appearance-none rounded-xl border border-line bg-surface px-4 py-3 text-[13.5px] text-ink focus:border-brand/40 focus:ring-2 focus:ring-brand/10 focus:outline-none"
+                  >
+                    <option value="">Let the engine decide (top-scoring role)</option>
+                    {roles.map((r) => (
+                      <option key={r.name} value={r.name}>
+                        {r.name} — {r.required_count} required skills
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-neutral-400" strokeWidth={2.2} />
+                </div>
+                <p className="mt-2 text-[12px] leading-relaxed text-neutral-500">
+                  The learning roadmap is built from the gaps of this role. Leave it blank to use your best match.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-2.5 space-y-2">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10.5px] text-neutral-400 font-mono">Sample JD:</span>
+                  {SAMPLE_JDS.map((jd) => (
+                    <button
+                      key={jd.id}
+                      type="button"
+                      onClick={() => {
+                        setCustomJd(jd.text);
+                        setActiveJdSample(jd.id);
+                      }}
+                      className={`rounded-full border px-2 py-0.5 text-[10.5px] font-medium transition-colors ${
+                        activeJdSample === jd.id
+                          ? "border-brand/40 bg-brand/[0.08] text-brand"
+                          : "border-line bg-surface text-ink-soft hover:text-ink"
+                      }`}
+                    >
+                      {jd.title}
+                    </button>
+                  ))}
+                </div>
+                <textarea
+                  value={customJd}
+                  onChange={(e) => {
+                    setCustomJd(e.target.value);
+                    setActiveJdSample(null);
+                  }}
+                  rows={4}
+                  placeholder="Paste an exact job posting / description from LinkedIn, Indeed, etc. RoleFit will parse its required skills and match your resume against it..."
+                  className="w-full rounded-xl border border-line bg-surface p-3 text-[12.5px] text-ink placeholder:text-neutral-400 focus:border-brand/40 focus:ring-2 focus:ring-brand/10 focus:outline-none"
+                />
+                {customJdSkills.length > 0 && (
+                  <div className="rounded-lg border border-line/50 bg-paper/60 p-2.5">
+                    <p className="text-[10.5px] text-neutral-400 font-mono">
+                      Detected {customJdSkills.length} JD requirements:
+                    </p>
+                    <div className="mt-1.5 flex flex-wrap gap-1">
+                      {customJdSkills.map((s) => (
+                        <SkillChip key={s} label={skillLabel(s)} tone="neutral" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* submit */}
