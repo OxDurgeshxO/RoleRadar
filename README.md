@@ -1,4 +1,4 @@
-# 🎯 RoleFit — AI Resume Analyzer & Career Intelligence Platform
+# 🎯 RoleRadar — AI Resume Analyzer & Career Intelligence Platform
 
 [![Next.js 16](https://img.shields.io/badge/Next.js-16.2-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
@@ -47,7 +47,7 @@
 ## 📁 Project Architecture
 
 ```text
-ROLEFIT2/
+RoleRadar/
 ├── src/
 │   ├── app/
 │   │   ├── page.tsx                    # Landing page & hero
@@ -99,8 +99,8 @@ ROLEFIT2/
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/OxDurgeshxO/ROLEFIT2.git
-cd ROLEFIT2
+git clone https://github.com/OxDurgeshxO/RoleRadar.git
+cd RoleRadar
 npm install
 ```
 
