@@ -28,6 +28,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </div>
         <div className="noise-overlay" aria-hidden />
         <Nav />
+        {/* Visual Beta Audit Marker */}
+        <div
+          id="beta-audit-badge"
+          className="fixed bottom-4 right-4 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-blue-500/50 text-blue-300 text-xs font-mono shadow-lg shadow-blue-950/50 backdrop-blur-md pointer-events-auto"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+          </span>
+          <span className="font-semibold tracking-wide">BETA AUDIT PREVIEW</span>
+        </div>
         <main className="min-h-screen">{children}</main>
         <Footer />
       </body>
