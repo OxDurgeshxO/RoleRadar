@@ -3,7 +3,7 @@
  * Validates deterministic scoring, verb taxonomy classification, and keyword gap analysis.
  */
 
-import { analyzeAts, extractKeywordGap, calculateWeightedAtsScore, categorizeActionVerbs } from "../src/lib/ats.ts";
+import { analyzeAts, extractKeywordGap, calculateWeightedAtsScore, categorizeActionVerbs } from "../src/lib/ats";
 
 const STRONG_RESUME = `
 Jane Doe
