@@ -12,6 +12,32 @@
 
 ---
 
+## 🏛️ Architecture & Processing Pipeline
+
+```mermaid
+flowchart LR
+    Upload["Resume Upload
+(.pdf, .docx, .md)"] --> Parser["Multimodal Parser
+& Token Extraction"]
+    Parser --> ATS["8-Point ATS Compatibility
+& Format Validation"]
+    ATS --> Matcher["Role Matching Engine
+(16 Target Profiles)"]
+    Matcher --> Optimizer["Google XYZ Bullet Optimizer
+& Action Verbs"]
+    Optimizer --> Roadmaps["Custom Week-by-Week
+Career Roadmap"]
+    
+    style Upload fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style Parser fill:#1e293b,stroke:#06b6d4,stroke-width:2px,color:#fff
+    style ATS fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
+    style Matcher fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#fff
+    style Optimizer fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#fff
+    style Roadmaps fill:#1e293b,stroke:#ec4899,stroke-width:2px,color:#fff
+```
+
+---
+
 ## 🌟 Key Features
 
 * 📄 **Multi-Format Resume Parser:** Robust parsing of `.pdf`, `.docx`, `.txt`, and `.md` files with automated Unicode sanitization and layout analysis.
