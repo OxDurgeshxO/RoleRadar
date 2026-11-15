@@ -1,9 +1,11 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-const databaseUrl =
-  process.env.DATABASE_URL ||
-  "postgresql://postgres:postgres@127.0.0.1:5432/rolefit_db";
+const databaseUrl = process.env.DATABASE_URL || "";
+
+if (!databaseUrl && process.env.NODE_ENV === "production") {
+  console.warn("DATABASE_URL is not set. In-memory fallback will handle analysis requests.");
+}
 
 const globalForDb = globalThis as typeof globalThis & {
   __arenaNextJsPostgresqlPool?: Pool;
